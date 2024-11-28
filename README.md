@@ -38,14 +38,12 @@ The system is designed to be modular and scalable, with the following key compon
 - **Documentation:**
   - Swagger UI for API documentation, accessible at `/api/v1/docs`.
 
-### **Entities and Relationships**
-1. **Flights:**
-   - Represents flight details such as departure, destination, date, and capacity.
-   - One flight can have multiple tickets (1-to-Many relationship).
-2. **Tickets:**
-   - Represents tickets for passengers booked for specific flights.
-3. **Users:**
-   - Admin users can manage flights and generate reports.
+## **Entity-Relationship (ER) Diagram**
+
+Below is the ER diagram for the Airline API project:
+
+![ER Diagram](assets/er_diagram.png)
+
 
 ### **Design Choices**
 - **Pagination:** Offset-based paging for flight queries to handle large datasets efficiently.

@@ -33,7 +33,7 @@ router.post('/', authenticate, async (req, res) => {
     const flights = [];
     let current = new Date(startDate);
 
-    // Tarih aralığında günlere göre uçuşları oluştur
+    // Generate Flights by Day Within a Date Range
     while (current <= endDate) {
       const dayName = current.toLocaleString('en-US', { weekday: 'long' });
       if (days.includes(dayName)) {

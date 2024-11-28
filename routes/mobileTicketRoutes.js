@@ -3,22 +3,22 @@ const router = express.Router();
 const Ticket = require('../models/Ticket');
 const Flight = require('../models/Flight');
 
-// Bilet satın alma rotası
+// Ticket Purchase Route
 router.post('/', async (req, res) => {
   try {
     const { flightId, passengerName } = req.body;
 
-    // Uçuş doğrulama
+    // Flight Validation
     const flight = await Flight.findById(flightId);
     if (!flight || flight.seatsAvailable <= 0) {
       return res.status(400).json({ status: 'error', message: 'No available seats or flight not found' });
     }
 
-    // Yeni bilet oluşturma
+    // Create New Ticket
     const ticket = new Ticket({ flightId, passengerName });
     await ticket.save();
 
-    // Koltuk sayısını güncelleme
+   // Update Seat Count
     flight.seatsAvailable -= 1;
     await flight.save();
 
@@ -28,28 +28,28 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Check-in işlemi rotası
+// Check-in Process Route
 router.post('/checkin', async (req, res) => {
   try {
     const { ticketId } = req.body;
 
-    // Parametre kontrolü
+    // Parameter Validation
     if (!ticketId) {
       return res.status(400).json({ status: 'error', message: 'Missing required parameter: ticketId' });
     }
 
-    // Bilet doğrulama
+    // Ticket Validation
     const ticket = await Ticket.findById(ticketId);
     if (!ticket) {
       return res.status(404).json({ status: 'error', message: 'Ticket not found' });
     }
 
-    // Zaten check-in yapılmış mı kontrolü
+    // Check if Already Checked-in
     if (ticket.checkedIn) {
       return res.status(400).json({ status: 'error', message: 'Ticket already checked in' });
     }
 
-    // Check-in işlemi
+    // Perform Check-in
     ticket.checkedIn = true;
     await ticket.save();
 

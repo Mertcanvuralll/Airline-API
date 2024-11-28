@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
   try {
     const { from, to, dateRange, offset = 0, limit = 10 } = req.query;
 
-    // Parametrelerin doğruluğunu kontrol et
+    // Validate Parameters
     if (!from || !to || !dateRange) {
       return res.status(400).json({
         status: 'error',
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
       });
     }
 
-    // dateRange doğrulaması
+    // Date Range Validation
     const dates = Array.isArray(dateRange) ? dateRange : dateRange.split(',');
     if (dates.length !== 2 || isNaN(new Date(dates[0])) || isNaN(new Date(dates[1]))) {
       return res.status(400).json({
@@ -31,11 +31,11 @@ router.get('/', async (req, res) => {
       });
     }
 
-    // Offset ve limit değerlerini sayıya çevir
+    // Convert Offset and Limit Values to Numbers
     const offsetNumber = parseInt(offset, 10);
     const limitNumber = parseInt(limit, 10);
 
-    // Uçuşları filtrele ve offset/limit uygula
+    // Filter Flights and Apply Offset/Limit
     const flights = await Flight.find({
       from,
       to,
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
       .skip(offsetNumber)
       .limit(limitNumber);
 
-    // Toplam kayıt sayısını hesapla
+    // Calculate Total Record Count
     const total = await Flight.countDocuments({
       from,
       to,
@@ -53,7 +53,7 @@ router.get('/', async (req, res) => {
       seatsAvailable: { $gt: 0 },
     });
 
-    // Yanıt formatı
+    // Response Format
     res.status(200).json({
       total,
       offset: offsetNumber,
@@ -62,7 +62,7 @@ router.get('/', async (req, res) => {
       message:
         flights.length > 0
           ? 'Flights fetched successfully'
-          : 'No flights available for the given criteria', // Mesaj her zaman dönecek
+          : 'No flights available for the given criteria', // Message Will Always Be Returned
     });
   } catch (err) {
     console.error('Error fetching flights:', err);

@@ -7,7 +7,7 @@ const swaggerDocument = require('./swagger.json');
 
 const app = express();
 
-// MongoDB Bağlantısı
+// MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
@@ -16,7 +16,7 @@ mongoose
 // Middleware
 app.use(bodyParser.json());
 
-// Rota Loglama (istekleri loglamak için faydalı bir middleware)
+// Route Logging (a useful middleware for logging requests)
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
@@ -31,11 +31,11 @@ app.use('/api/v1/auth', require('./routes/authRoutes'));
 // Swagger UI
 app.use('/api/v1/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Temel Rota
+//Base Route
 app.get('/', (req, res) => {
   res.send('API is running. Use /api/v1/ endpoints.');
 });
 
-// Sunucu Başlatma
+// Server Initialization
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
