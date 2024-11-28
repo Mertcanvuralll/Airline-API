@@ -354,11 +354,11 @@
               "properties": {
                 "username": {
                   "type": "string",
-                  "example": "admin"
+                  "example": "string"
                 },
                 "password": {
                   "type": "string",
-                  "example": "admin123"
+                  "example": "string"
                 }
               },
               "required": ["username", "password"]
