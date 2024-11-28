@@ -5,9 +5,9 @@
     "title": "Airline API",
     "description": "API for managing airline operations such as flight creation, ticket booking, and passenger check-in."
   },
-  "host": "localhost:5000",
+  "host": "airline-api-tend.onrender.com",
   "basePath": "/api/v1",
-  "schemes": ["http"],
+  "schemes": ["https"],
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
