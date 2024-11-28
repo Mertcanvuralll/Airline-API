@@ -85,138 +85,194 @@
         ]
       }
     },
-   "/admin/flights/capacity": {
-  "get": {
-    "tags": ["Admin"],
-    "summary": "Report Flights with Capacity",
-    "description": "Lists flights with a minimum available capacity within a specific date range.",
-    "parameters": [
-      {
-        "name": "from",
-        "in": "query",
-        "type": "string",
-        "required": true,
-        "description": "Departure city (e.g., New York)"
-      },
-      {
-        "name": "to",
-        "in": "query",
-        "type": "string",
-        "required": true,
-        "description": "Destination city (e.g., Los Angeles)"
-      },
-      {
-        "name": "dateRange",
-        "in": "query",
-        "type": "array",
-        "items": { "type": "string", "format": "date" },
-        "required": true,
-        "description": "Array of two dates: [startDate, endDate] (e.g., 2024-12-01,2024-12-05)"
-      },
-      {
-        "name": "capacity",
-        "in": "query",
-        "type": "integer",
-        "required": true,
-        "description": "Minimum available capacity (e.g., 100)"
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "List of flights with capacity",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "total": { "type": "integer", "description": "Total number of flights" },
-            "flights": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "from": { "type": "string" },
-                  "to": { "type": "string" },
-                  "date": { "type": "string", "format": "date" },
-                  "capacity": { "type": "integer" },
-                  "seatsAvailable": { "type": "integer" }
+    "/admin/flights/capacity": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Report Flights with Capacity",
+        "description": "Lists flights with a minimum available capacity within a specific date range.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "description": "Departure city (e.g., New York)"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "description": "Destination city (e.g., Los Angeles)"
+          },
+          {
+            "name": "dateRange",
+            "in": "query",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": true,
+            "description": "Array of two dates: [startDate, endDate] (e.g., 2024-12-01,2024-12-05)"
+          },
+          {
+            "name": "capacity",
+            "in": "query",
+            "type": "integer",
+            "required": true,
+            "description": "Minimum available capacity (e.g., 100)"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "type": "integer",
+            "default": 0,
+            "description": "The starting point for the results (default: 0)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "integer",
+            "default": 10,
+            "description": "The maximum number of results to return (default: 10)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of flights with capacity",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer",
+                  "description": "Total number of flights"
+                },
+                "offset": {
+                  "type": "integer",
+                  "description": "The starting point of the results"
+                },
+                "limit": {
+                  "type": "integer",
+                  "description": "The maximum number of results returned"
+                },
+                "flights": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "description": "Departure city"
+                      },
+                      "to": {
+                        "type": "string",
+                        "description": "Destination city"
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Flight date"
+                      },
+                      "capacity": {
+                        "type": "integer",
+                        "description": "Total flight capacity"
+                      },
+                      "seatsAvailable": {
+                        "type": "integer",
+                        "description": "Seats still available"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Status message indicating the result of the query"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request - Missing or invalid parameters"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
-      },
-      "400": {
-        "description": "Bad Request - Missing or invalid parameters"
-      },
-      "500": {
-        "description": "Internal server error"
       }
-    }
-  }
-},
-    "/mobile/flights": {
-  "get": {
-    "tags": ["Mobile"],
-    "summary": "Query Flights",
-    "description": "Lists available flights for a specific date range and route.",
-    "parameters": [
-      {
-        "name": "from",
-        "in": "query",
-        "type": "string",
-        "required": true,
-        "description": "Departure city (e.g., New York)"
-      },
-      {
-        "name": "to",
-        "in": "query",
-        "type": "string",
-        "required": true,
-        "description": "Destination city (e.g., Los Angeles)"
-      },
-      {
-        "name": "dateRange",
-        "in": "query",
-        "type": "array",
-        "items": { 
-          "type": "string", 
-          "format": "date" 
+    },
+  "/mobile/flights": {
+    "get": {
+      "tags": ["Mobile"],
+      "summary": "Query Flights with Paging",
+      "description": "Lists available flights for a specific date range and route with paging support.",
+      "parameters": [
+        {
+          "name": "from",
+          "in": "query",
+          "type": "string",
+          "required": true,
+          "description": "Departure city (e.g., New York)"
         },
-        "required": true,
-        "minItems": 2,
-        "maxItems": 2,
-        "description": "Array of exactly two dates: [startDate, endDate] (e.g., 2024-12-01,2024-12-05)"
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "List of available flights",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "total": { "type": "integer", "description": "Total number of flights" },
-            "flights": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "from": { "type": "string", "description": "Departure city" },
-                  "to": { "type": "string", "description": "Destination city" },
-                  "date": { "type": "string", "format": "date", "description": "Flight date" },
-                  "seatsAvailable": { "type": "integer", "description": "Available seats" }
+        {
+          "name": "to",
+          "in": "query",
+          "type": "string",
+          "required": true,
+          "description": "Destination city (e.g., Los Angeles)"
+        },
+        {
+          "name": "dateRange",
+          "in": "query",
+          "type": "array",
+          "items": { "type": "string", "format": "date" },
+          "required": true,
+          "description": "Array of two dates: [startDate, endDate] (e.g., 2024-12-01,2024-12-05)"
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "type": "integer",
+          "default": 0,
+          "description": "The starting point for the results (default: 0)"
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "type": "integer",
+          "default": 10,
+          "description": "The maximum number of results to return (default: 10)"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "List of available flights",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "description": "Total number of flights" },
+              "offset": { "type": "integer", "description": "Starting point of the results" },
+              "limit": { "type": "integer", "description": "Maximum number of results" },
+              "flights": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "from": { "type": "string" },
+                    "to": { "type": "string" },
+                    "date": { "type": "string", "format": "date" },
+                    "seatsAvailable": { "type": "integer" }
+                  }
                 }
-              }
+              },
+              "message": { "type": "string", "description": "Status message" }
             }
           }
-        }
-      },
-      "400": {
-        "description": "Bad Request - Missing or invalid parameters"
-      },
-      "500": {
-        "description": "Internal server error"
+        },
+        "400": { "description": "Bad Request - Missing or invalid parameters" },
+        "500": { "description": "Internal server error" }
       }
     }
-  }
  },
     "/tickets/checkin": {
       "post": {

@@ -33,7 +33,6 @@ router.post('/', authenticate, async (req, res) => {
     const flights = [];
     let current = new Date(startDate);
 
-    // Generate Flights by Day Within a Date Range
     while (current <= endDate) {
       const dayName = current.toLocaleString('en-US', { weekday: 'long' });
       if (days.includes(dayName)) {
@@ -41,8 +40,8 @@ router.post('/', authenticate, async (req, res) => {
           from,
           to,
           date: new Date(current),
-          capacity: parseInt(capacity),
-          seatsAvailable: parseInt(capacity),
+          capacity: parseInt(capacity, 10),
+          seatsAvailable: parseInt(capacity, 10),
         });
         flights.push(newFlight.save());
       }
@@ -58,7 +57,7 @@ router.post('/', authenticate, async (req, res) => {
   }
 });
 
-// Report Flights with Capacity
+// Report Flights with Capacity (Paging Included)
 router.get('/capacity', authenticate, async (req, res) => {
   try {
     const { from, to, dateRange, capacity, offset = 0, limit = 10 } = req.query;
@@ -105,18 +104,14 @@ router.get('/capacity', authenticate, async (req, res) => {
       seatsAvailable: { $gte: capacity },
     });
 
-    if (flights.length === 0) {
-      return res.status(200).json({
-        total,
-        flights: [],
-        message: 'No flights available for the given criteria',
-      });
-    }
-
     res.status(200).json({
       total,
+      offset: offsetNumber,
+      limit: limitNumber,
       flights,
-      message: 'Flights fetched successfully',
+      message: flights.length > 0
+        ? 'Flights fetched successfully'
+        : 'No flights available for the given criteria',
     });
   } catch (err) {
     console.error('Error fetching flights:', err);
