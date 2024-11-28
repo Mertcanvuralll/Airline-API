@@ -29,7 +29,7 @@ app.use('/api/v1/tickets', require('./routes/mobileTicketRoutes'));
 app.use('/api/v1/auth', require('./routes/authRoutes'));
 
 // Swagger UI
-app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/v1/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Temel Rota
 app.get('/', (req, res) => {
