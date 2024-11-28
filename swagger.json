@@ -1,0 +1,330 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Airline API",
+    "description": "API for managing airline operations such as flight creation, ticket booking, and passenger check-in."
+  },
+  "host": "localhost:5000",
+  "basePath": "/api/v1",
+  "schemes": ["http"],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Enter your Bearer token in the format: Bearer <token>"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Admin",
+      "description": "Admin operations such as managing flights and generating reports."
+    },
+    {
+      "name": "Mobile",
+      "description": "Endpoints for mobile app functionalities like querying flights, booking tickets, and check-in."
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints like login."
+    }
+  ],
+  "paths": {
+    "/admin/flights": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Insert Flight",
+        "description": "Adds new flights based on the given date range and repeating days.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "from": { "type": "string" },
+                "to": { "type": "string" },
+                "dateRange": {
+                  "type": "array",
+                  "items": { "type": "string", "format": "date" }
+                },
+                "days": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "capacity": { "type": "integer" }
+              },
+              "required": ["from", "to", "dateRange", "capacity"]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Flight created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string" },
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "500": { "description": "Internal server error" }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+   "/admin/flights/capacity": {
+  "get": {
+    "tags": ["Admin"],
+    "summary": "Report Flights with Capacity",
+    "description": "Lists flights with a minimum available capacity within a specific date range.",
+    "parameters": [
+      {
+        "name": "from",
+        "in": "query",
+        "type": "string",
+        "required": true,
+        "description": "Departure city (e.g., New York)"
+      },
+      {
+        "name": "to",
+        "in": "query",
+        "type": "string",
+        "required": true,
+        "description": "Destination city (e.g., Los Angeles)"
+      },
+      {
+        "name": "dateRange",
+        "in": "query",
+        "type": "array",
+        "items": { "type": "string", "format": "date" },
+        "required": true,
+        "description": "Array of two dates: [startDate, endDate] (e.g., 2024-12-01,2024-12-05)"
+      },
+      {
+        "name": "capacity",
+        "in": "query",
+        "type": "integer",
+        "required": true,
+        "description": "Minimum available capacity (e.g., 100)"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "List of flights with capacity",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "total": { "type": "integer", "description": "Total number of flights" },
+            "flights": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": { "type": "string" },
+                  "to": { "type": "string" },
+                  "date": { "type": "string", "format": "date" },
+                  "capacity": { "type": "integer" },
+                  "seatsAvailable": { "type": "integer" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request - Missing or invalid parameters"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+    "/mobile/flights": {
+  "get": {
+    "tags": ["Mobile"],
+    "summary": "Query Flights",
+    "description": "Lists available flights for a specific date range and route.",
+    "parameters": [
+      {
+        "name": "from",
+        "in": "query",
+        "type": "string",
+        "required": true,
+        "description": "Departure city (e.g., New York)"
+      },
+      {
+        "name": "to",
+        "in": "query",
+        "type": "string",
+        "required": true,
+        "description": "Destination city (e.g., Los Angeles)"
+      },
+      {
+        "name": "dateRange",
+        "in": "query",
+        "type": "array",
+        "items": { 
+          "type": "string", 
+          "format": "date" 
+        },
+        "required": true,
+        "minItems": 2,
+        "maxItems": 2,
+        "description": "Array of exactly two dates: [startDate, endDate] (e.g., 2024-12-01,2024-12-05)"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "List of available flights",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "total": { "type": "integer", "description": "Total number of flights" },
+            "flights": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "from": { "type": "string", "description": "Departure city" },
+                  "to": { "type": "string", "description": "Destination city" },
+                  "date": { "type": "string", "format": "date", "description": "Flight date" },
+                  "seatsAvailable": { "type": "integer", "description": "Available seats" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad Request - Missing or invalid parameters"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+ },
+    "/tickets/checkin": {
+      "post": {
+        "tags": ["Mobile"],
+        "summary": "Check-in a Flight",
+        "description": "Checks in a passenger for a specific flight.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ticketId": {
+                  "type": "string",
+                  "description": "The MongoDB ObjectId of the ticket to check-in"
+                }
+              },
+              "required": ["ticketId"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Check-in successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string" },
+                "message": { "type": "string" }
+              }
+            }
+          },
+          "400": { "description": "Invalid ObjectId format" },
+          "404": { "description": "Ticket not found" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/tickets": {
+      "post": {
+        "tags": ["Mobile"],
+        "summary": "Buy Ticket",
+        "description": "Buys a ticket for a specific flight.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "flightId": { "type": "string" },
+                "passengerName": { "type": "string" }
+              },
+              "required": ["flightId", "passengerName"]
+            }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Ticket purchased successfully" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User Login",
+        "description": "Logs in a user and returns a JWT token.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "example": "admin"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "admin123"
+                }
+              },
+              "required": ["username", "password"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string" },
+                "token": { "type": "string" }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid username or password"
+          }
+        }
+      }
+    }
+  }
+}
