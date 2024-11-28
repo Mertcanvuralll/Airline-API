@@ -6,7 +6,6 @@ This is a RESTful API for managing airline operations such as flight creation, t
 - **Source Code:** [Airline-API](https://github.com/Mertcanvuralll/Airline-API)
 - **Live API (Render Deployment):** [Airline API](https://airline-api-tend.onrender.com/api/v1)
 
-
 ---
 
 ## **Features**
@@ -20,6 +19,16 @@ This is a RESTful API for managing airline operations such as flight creation, t
 3. **Authentication:**
    - Admin users can log in and perform secured operations.
    - JWT-based authentication is used for secured API endpoints.
+
+---
+
+## **Authentication**
+1. Admin Login:
+   - **Endpoint:** `POST /auth/login`
+   - **Sample Credentials:**
+     - **Username:** `admin`
+     - **Password:** `admin123`
+   - Use these credentials to log in and generate a JWT token for admin operations.
 
 ---
 
@@ -44,6 +53,7 @@ Below is the ER diagram for the Airline API project:
 
 ![ER Diagram](assets/er_diagram.png)
 
+---
 
 ### **Design Choices**
 - **Pagination:** Offset-based paging for flight queries to handle large datasets efficiently.
@@ -84,4 +94,3 @@ Below is the ER diagram for the Airline API project:
 5. **Admin Authorization:**
    - Issue: Invalid tokens were incorrectly labeled as "Authorized" in Swagger.
    - Solution: Updated token validation logic and provided clear error messages.
-
